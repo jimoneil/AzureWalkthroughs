@@ -1,0 +1,219 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+	"contentVersion": "1.1.0.0",
+	"parameters": {
+		
+	},
+	"variables": {
+		"inputStorageName" : "nyc0613.blob.core.windows.net",
+		"inputStorageKey" : "OXkFDIVDbWyTwuBzHy1SYzP/zv5VRr7g5ajmYUBILt9FTJ1MYasCjEk8q2EQIzTRfkYJRwN4q37gArhcDUjozQ==",
+		"outputStorageName" : "[concat('store', uniqueString(resourceGroup().id))]",
+		"streamAnalyticsName": "[concat('stanl', uniqueString(resourceGroup().id))]",
+		"serviceBusName": "[concat('srvbus', uniqueString(resourceGroup().id))]",
+		"appServicePlanName": "[concat('asp', uniqueString(resourceGroup().id))]",
+		"functionAppName": "[concat('func', uniqueString(resourceGroup().id))]",
+		"sendPolicyName": "TopicSendPolicy",
+		"listenPolicyName": "TopicListenPolicy",
+		"topicName": "alerts",
+		"subscriptionName": "azureFunction"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"kind": "Storage",
+			"name": "[variables('outputStorageName')]",
+			"apiVersion": "2016-01-01",
+			"location": "[resourceGroup().location]"
+		},
+		
+		{
+			"type": "Microsoft.ServiceBus/namespaces",
+			"sku": {
+				"name": "Standard",
+				"tier": "Standard"
+			},
+			"kind": "Messaging",
+			"name": "[variables('serviceBusName')]",
+			"apiVersion": "2015-08-01",
+			"location": "[resourceGroup().location]"
+		},
+		
+		{
+			"type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+			"name": "[concat(variables('serviceBusName'), '/', variables('listenPolicyName'))]",
+			"apiVersion": "2015-08-01",
+			"properties": {
+				"rights": [
+					"Listen"
+				]
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+			]
+		},
+			
+		{
+			"type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+			"name": "[concat(variables('serviceBusName'), '/', variables('sendPolicyName'))]",
+			"apiVersion": "2015-08-01",
+			"properties": {
+				"rights": [
+					"Send"
+				]
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+			]
+		},	
+		
+		{
+			"type": "Microsoft.ServiceBus/namespaces/topics",
+			"name": "[concat(variables('serviceBusName'), '/', variables('topicName'))]",
+			"apiVersion": "2015-08-01",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+				"[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+			]
+		},
+		
+		{
+			"type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+            "name": "[concat(variables('serviceBusName'), '/', variables('topicName'), '/', variables('subscriptionName'))]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces/topics', variables('serviceBusName'), variables('topicName'))]"
+            ]
+        },
+		
+		{
+			"type": "Microsoft.StreamAnalytics/streamingjobs",
+			"apiVersion": "2016-03-01",
+			"name": "[variables('streamAnalyticsName')]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"sku": {
+					"name": "standard"
+				},
+				"inputs": [{
+					"name": "blobInput",
+					"properties": {
+						"type": "stream",
+						"serialization": {
+							"type": "Json",
+							"properties": {
+								"encoding":"UTF8" 
+							}
+						},
+						"datasource": {
+							"type": "Microsoft.Storage/Blob",
+							"properties": {
+								"storageAccounts": [{
+									"accountName": "[variables('inputStorageName')]",
+									"accountKey": "[variables('inputStorageKey')]"
+									}],
+								"container": "sensordata",
+								"pathPattern": ""
+							}
+						}
+					}
+				}],
+				"transformation": {
+					"name": "query",
+					"properties": {
+						"streamingUnits": 1,
+						"query": "SELECT sensorId, CAST(temp AS BIGINT) as temp INTO sbOutput FROM blobInput WHERE temp > 125"
+					}
+				},
+				"outputs": [{
+					"name": "sbOutput",
+					"properties": {
+						"type": "stream",
+						"serialization": {
+							"type": "Json",
+							"properties": {
+								"encoding":"UTF8" 
+							}
+						},
+						"datasource": {
+							"type": "Microsoft.ServiceBus/Topic",
+							"properties": {
+								"serviceBusNamespace": "[variables('serviceBusName')]",
+								"sharedAccessPolicyName": "[variables('sendPolicyName')]",
+								"sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules',variables('serviceBusName'),variables('sendPolicyName')),'2015-08-01').primaryKey]",
+								"topicName": "alerts"
+							}
+						}
+					}
+				}]
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.ServiceBus/namespaces/topics', variables('serviceBusName'), variables('topicName'))]",
+			    "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules',variables('serviceBusName'),variables('sendPolicyName'))]",				
+			]
+		},
+		
+		{
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "[variables('appServicePlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]"
+        },
+		
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[variables('functionAppName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+			"properties": {
+                "name": "[variables('functionAppName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+            },
+			"resources": [
+				{
+					"name": "appsettings",
+					"type": "config",
+					"apiVersion": "2015-08-01",
+					"dependsOn": [
+						"[concat('Microsoft.Web/sites/', variables('functionAppName'))]",
+						"[resourceId('Microsoft.Storage/storageAccounts', variables('outputStorageName'))]",
+						"[resourceId('Microsoft.ServiceBus/namespaces/topics/subscriptions', variables('serviceBusName'),variables('topicName'), variables('subscriptionName'))]"
+					],
+					"properties": {
+						"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('outputStorageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('outputStorageName')),'2016-01-01').keys[0].value)]",
+						"AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('outputStorageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('outputStorageName')),'2016-01-01').keys[0].value)]",
+						"WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('outputStorageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('outputStorageName')),'2016-01-01').keys[0].value)]",
+						"WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
+						"FUNCTIONS_EXTENSION_VERSION": "-1",
+						
+						"sb_BINDING": "[concat('Endpoint=sb://', variables('serviceBusName'),'.servicebus.windows.net/;SharedAccessKeyName=',variables('listenPolicyName'),';SharedAccessKey=',listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules',variables('serviceBusName'),variables('listenPolicyName')),'2015-08-01').primaryKey)]",
+						
+						"storage_BINDING": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('outputStorageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('outputStorageName')),'2016-01-01').keys[0].value)]"
+					}
+				}
+			],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+            ]
+        }
+	],
+	"outputs" : {
+		"functionName" : {
+			"type": "string",
+			"value": "[variables('functionAppName')]"
+		}
+	}
+}

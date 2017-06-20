@@ -1,0 +1,190 @@
+[{
+	"eventTime": "2017-06-10T20:47:53.0000000",
+	"sensorId": "sensorE",
+	"temp": 123
+},
+{
+	"eventTime": "2017-06-10T20:47:54.0000000",
+	"sensorId": "sensorC",
+	"temp": 77
+},
+{
+	"eventTime": "2017-06-10T20:47:55.0000000",
+	"sensorId": "sensorA",
+	"temp": 128
+},
+{
+	"eventTime": "2017-06-10T20:47:56.0000000",
+	"sensorId": "sensorE",
+	"temp": 73
+},
+{
+	"eventTime": "2017-06-10T20:47:57.0000000",
+	"sensorId": "sensorA",
+	"temp": 134
+},
+{
+	"eventTime": "2017-06-10T20:47:58.0000000",
+	"sensorId": "sensorE",
+	"temp": 140
+},
+{
+	"eventTime": "2017-06-10T20:47:59.0000000",
+	"sensorId": "sensorD",
+	"temp": 100
+},
+{
+	"eventTime": "2017-06-10T20:48:00.0000000",
+	"sensorId": "sensorE",
+	"temp": 125
+},
+{
+	"eventTime": "2017-06-10T20:48:01.0000000",
+	"sensorId": "sensorD",
+	"temp": 99
+},
+{
+	"eventTime": "2017-06-10T20:48:02.0000000",
+	"sensorId": "sensorC",
+	"temp": 144
+},
+{
+	"eventTime": "2017-06-10T20:48:03.0000000",
+	"sensorId": "sensorB",
+	"temp": 75
+},
+{
+	"eventTime": "2017-06-10T20:48:04.0000000",
+	"sensorId": "sensorA",
+	"temp": 93
+},
+{
+	"eventTime": "2017-06-10T20:48:05.0000000",
+	"sensorId": "sensorA",
+	"temp": 109
+},
+{
+	"eventTime": "2017-06-10T20:48:06.0000000",
+	"sensorId": "sensorB",
+	"temp": 127
+},
+{
+	"eventTime": "2017-06-10T20:48:07.0000000",
+	"sensorId": "sensorC",
+	"temp": 118
+},
+{
+	"eventTime": "2017-06-10T20:48:08.0000000",
+	"sensorId": "sensorC",
+	"temp": 144
+},
+{
+	"eventTime": "2017-06-10T20:48:09.0000000",
+	"sensorId": "sensorA",
+	"temp": 133
+},
+{
+	"eventTime": "2017-06-10T20:48:10.0000000",
+	"sensorId": "sensorA",
+	"temp": 132
+},
+{
+	"eventTime": "2017-06-10T20:48:11.0000000",
+	"sensorId": "sensorA",
+	"temp": 75
+},
+{
+	"eventTime": "2017-06-10T20:48:12.0000000",
+	"sensorId": "sensorE",
+	"temp": 129
+},
+{
+	"eventTime": "2017-06-10T20:48:13.0000000",
+	"sensorId": "sensorB",
+	"temp": 130
+},
+{
+	"eventTime": "2017-06-10T20:48:14.0000000",
+	"sensorId": "sensorD",
+	"temp": 119
+},
+{
+	"eventTime": "2017-06-10T20:48:15.0000000",
+	"sensorId": "sensorB",
+	"temp": 79
+},
+{
+	"eventTime": "2017-06-10T20:48:16.0000000",
+	"sensorId": "sensorC",
+	"temp": 124
+},
+{
+	"eventTime": "2017-06-10T20:48:17.0000000",
+	"sensorId": "sensorC",
+	"temp": 91
+},
+{
+	"eventTime": "2017-06-10T20:48:18.0000000",
+	"sensorId": "sensorD",
+	"temp": 109
+},
+{
+	"eventTime": "2017-06-10T20:48:19.0000000",
+	"sensorId": "sensorB",
+	"temp": 83
+},
+{
+	"eventTime": "2017-06-10T20:48:20.0000000",
+	"sensorId": "sensorA",
+	"temp": 102
+},
+{
+	"eventTime": "2017-06-10T20:48:21.0000000",
+	"sensorId": "sensorC",
+	"temp": 81
+},
+{
+	"eventTime": "2017-06-10T20:48:22.0000000",
+	"sensorId": "sensorB",
+	"temp": 145
+},
+{
+	"eventTime": "2017-06-10T20:48:23.0000000",
+	"sensorId": "sensorC",
+	"temp": 98
+},
+{
+	"eventTime": "2017-06-10T20:48:24.0000000",
+	"sensorId": "sensorC",
+	"temp": 71
+},
+{
+	"eventTime": "2017-06-10T20:48:25.0000000",
+	"sensorId": "sensorB",
+	"temp": 120
+},
+{
+	"eventTime": "2017-06-10T20:48:26.0000000",
+	"sensorId": "sensorA",
+	"temp": 90
+},
+{
+	"eventTime": "2017-06-10T20:48:27.0000000",
+	"sensorId": "sensorC",
+	"temp": 117
+},
+{
+	"eventTime": "2017-06-10T20:48:28.0000000",
+	"sensorId": "sensorA",
+	"temp": 113
+},
+{
+	"eventTime": "2017-06-10T20:48:29.0000000",
+	"sensorId": "sensorA",
+	"temp": 102
+},
+{
+	"eventTime": "2017-06-10T20:48:30.0000000",
+	"sensorId": "sensorE",
+	"temp": 116
+}]
